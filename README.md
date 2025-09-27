@@ -1,36 +1,63 @@
-# Calories_prediction
-## 🚀 Workflow
+# Calorie Burn Prediction
 
-### 1. Import Libraries
-- NumPy, Pandas, Matplotlib, Seaborn  
-- Scikit-learn (Label Encoding, KFold CV, Metrics)  
-- XGBoost & LightGBM Regressors  
+## Overview
+This repository contains a Jupyter Notebook for predicting calories burned during exercise using a dataset from a Kaggle competition. The notebook includes data exploration, preprocessing, feature engineering, and training ensemble models (XGBoost + LightGBM) with KFold cross-validation, achieving low RMSLE via averaging predictions.
 
-### 2. Load Data
-- Reads `train.csv` and `test.csv`  
-- Drops unnecessary `id` column  
+## Dataset
+- **Training Data**: `/kaggle/input/playground-series-s5e6/train.csv` (750,000 entries)
+- **Test Data**: `/kaggle/input/playground-series-s5e6/test.csv` (250,000 entries)
+- **Features**:
+  - `Sex` (categorical: male/female)
+  - `Age` (numerical)
+  - `Height` (numerical, cm)
+  - `Weight` (numerical, kg)
+  - `Duration` (numerical, minutes)
+  - `Heart_Rate` (numerical)
+  - `Body_Temp` (numerical, Celsius)
+- **Target**: `Calories` (numerical, regression task)
+- **Missing Values**: Handled by filling with column means.
+- **Additional Feature**: `BMI` = Weight / (Height/100)^2
 
-### 3. Exploratory Data Analysis (EDA)
-- `.info()` → check data types  
-- `.isnull().sum()` → check missing values  
-- Visualizations with **Matplotlib** and **Seaborn**  
+## Approach
+1. **Data Loading & Exploration**:
+   - Load train/test with Pandas; drop 'id'.
+   - View head, info, describe, null percentages.
+   - Visualizations: Boxplots for outliers, pairplots, correlation heatmap.
 
-### 4. Preprocessing
-- Encode categorical features using `LabelEncoder`  
-- Handle missing values (if any)  
+2. **Preprocessing**:
+   - Label encode 'Sex' (male=0, female=1).
+   - Fill nulls with means for numerical columns.
 
-### 5. Modeling
-Trains regression models:
-- **XGBoost Regressor**  
-- **LightGBM Regressor**  
-- Uses **K-Fold Cross Validation** for evaluation  
+3. **Feature Engineering**:
+   - Calculate and add 'BMI' column.
 
-### 6. Evaluation Metrics
-- Mean Absolute Error (**MAE**)  
-- Mean Squared Log Error (**MSLE**)  
+4. **Modeling**:
+   - Use KFold (5 splits) for cross-validation.
+   - Models: XGBRegressor (n_estimators=1000, learning_rate=0.03, etc.) and LGBMRegressor (similar params).
+   - Train on folds, predict on validation/test.
+   - Ensemble: Average predictions from XGBoost and LightGBM.
 
----
+5. **Evaluation**:
+   - Metric: Root Mean Squared Logarithmic Error (RMSLE) on validation sets.
 
-## 📊 Results
-- Compares performance of **XGBoost** and **LightGBM** models  
-- Best-performing model can be used to generate predictions for `test.csv`  
+6. **Submission**:
+   - Generate `submission.csv` with averaged predictions.
+
+## Requirements
+- Python 3.11+
+- Libraries: `numpy`, `pandas`, `matplotlib`, `seaborn`, `scikit-learn` (LabelEncoder, KFold, metrics), `xgboost`, `lightgbm`
+
+Install via:
+```bash
+pip install numpy pandas matplotlib seaborn scikit-learn xgboost lightgbm
+```
+
+## Results
+- Ensemble approach minimizes RMSLE.
+- Sample submission tail (last 10 predictions shown in notebook).
+
+## Notes
+- Designed for Kaggle environment 
+- For local runs, update file paths.
+- Potential improvements: Hyperparameter tuning, more features, other ensembles.
+
